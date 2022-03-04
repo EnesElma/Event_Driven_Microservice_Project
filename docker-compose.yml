@@ -1,0 +1,86 @@
+version: "3.7"
+services:
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    networks:
+      - MyNetwork
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - kafka
+
+  zookeeper:
+    image: 'bitnami/zookeeper:3.6.3'
+    container_name: zookeeper
+    volumes:
+      - kafkaZookeeperVolume:/var/lib/zookeeper/data
+      - kafkaZookeeperLogVolume:/var/lib/zookeeper/log
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - MyNetwork
+
+  kafka:
+    image: 'bitnami/kafka:3.1.0'
+    container_name: kafka
+    volumes:
+      - kafkaBrokerVolume:/var/lib/kafka/data
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    networks:
+      - MyNetwork
+
+#  producer:
+#    build: ./producer
+#    image: elmaenes/spring_kafka_producer
+#    container_name: producer
+#    ports:
+#    - "8080:8080"
+#    networks:
+#      - kafkaNet
+#    depends_on:
+#      - broker
+#    environment:
+#      MY_BROKER_PRODUCER: broker:19092
+#
+#  consumer:
+#    build: ./consumer
+#    image: elmaenes/spring_kafka_consumer
+#    container_name: consumer
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - kafkaNet
+#    depends_on:
+#      - broker
+#    environment:
+#      MY_BROKER_CONSUMER: broker:19092
+
+
+volumes:
+  kafkaBrokerVolume:
+  kafkaZookeeperVolume:
+  kafkaZookeeperLogVolume:
+
+networks:
+  MyNetwork:
+    driver: bridge
+    name: MyNetwork

@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://${USER_DB_IP:localhost:15433}/user?ssl=false
+    username: postgres
+    password: postgres
+
+  cloud:
+    gateway:
+      routes:
+        - id: product_id
+          uri: http://localhost:8081
+          predicates:
+            - Path=/product/**
+        - id: order_id
+          uri: http://localhost:8082
+          predicates:
+            - Path=/order/**
+        - id: mail_id
+          uri: http://localhost:8083
+          predicates:
+            - Path=/mail/**
+

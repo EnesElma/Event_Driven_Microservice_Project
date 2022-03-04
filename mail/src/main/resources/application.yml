@@ -1,0 +1,16 @@
+server:
+  port: 8083
+
+spring:
+  kafka:
+    #kafka containerda ama uygulama pcde çalıştırılacaksa port sayıları aynı olmalı, 9092:9092 gibi, 19092:9092 çalışmıyor
+    bootstrap-servers: ${MY_KAFKA:localhost:9093}
+  data:
+    cassandra:
+      keyspaceName: maildb
+      contactPoints: ${MY_CASSANDRA:localhost}
+      port: ${CASSANDRA_PORT:9042}
+      schemaAction: CREATE_IF_NOT_EXISTS
+      username: cassandra
+      password: cassandra
+

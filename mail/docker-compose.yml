@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+#  mail:
+#    build: .
+#    image: mail
+#    container_name: mail
+#    depends_on:
+#      - mail_db
+#    ports:
+#    - 8083:8083
+#    networks:
+#      - MyNetwork
+#    environment:
+#      MY_KAFKA: kafka:9092
+#      MY_CASSANDRA: mail_db
+#      CASSANDRA_PORT: 9042
+
+
+  mail_db:
+    image: cassandra:3.11
+    container_name: maild_db
+    ports:
+      - 9042:9042
+    environment:
+      HEAP_NEWSIZE: 1M
+      MAX_HEAP_SIZE: 700M
+    volumes:
+      - csdata:/var/lib/cassandra
+    networks:
+      - MyNetwork
+
+
+
+volumes:
+  csdata:
+
+networks:
+  MyNetwork:
+    driver: bridge
+    name: MyNetwork
