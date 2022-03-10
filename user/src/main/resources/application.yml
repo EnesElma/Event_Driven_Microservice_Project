@@ -1,20 +1,13 @@
 server:
-  port: 8083
+  port: 8081
 
-product.validate.url: ${PRODUCT_S:localhost:8082}/product/validate
-
-
+#database
 spring:
-  kafka:
-    #kafka containerda ama uygulama pcde çalıştırılacaksa port sayıları aynı olmalı, 9092:9092 gibi, 19092:9092 çalışmıyor
-    bootstrap-servers: ${MY_KAFKA:localhost:9093}
-
   datasource:
     url: jdbc:postgresql://${POSTGRE_DB:localhost:15432}/postgre_db?ssl=false
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

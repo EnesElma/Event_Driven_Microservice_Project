@@ -1,11 +1,11 @@
-package com.enes.cloud_gateway.service;
+package com.enes.user.service;
 
-import com.enes.cloud_gateway.entity.User;
-import com.enes.cloud_gateway.repo.IUserRepository;
+import com.enes.user.entity.User;
+import com.enes.user.repo.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class UserService implements IUserService{
@@ -32,12 +32,12 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public Flux<User> findAll(){
+    public List<User> findAll(){
         return repository.findAll();
     }
 
     @Override
-    public Mono<User> findByEmail(String email){
+    public User findByEmail(String email){
         return repository.findByEmail(email);
     }
 

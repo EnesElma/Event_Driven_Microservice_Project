@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Mail {
 
     @Id @PrimaryKey(value = "id") @PrimaryKeyColumn(ordinal = 0,type = PrimaryKeyType.PARTITIONED)
-    private String id = UUID.randomUUID().toString();
+    private UUID id = UUID.randomUUID();
     @Column(value = "userid")
     private long userid;
     @Column(value = "email")

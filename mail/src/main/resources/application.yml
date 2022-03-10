@@ -1,5 +1,7 @@
 server:
-  port: 8083
+  port: 8084
+
+product.find.url: ${PRODUCT_S:localhost:8082}/product/get
 
 spring:
   kafka:

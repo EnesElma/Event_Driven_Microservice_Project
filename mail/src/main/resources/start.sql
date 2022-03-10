@@ -9,5 +9,3 @@ CREATE TABLE mail(
                      user_email text,
                      mail_text text
 );
-
-select * from mail;

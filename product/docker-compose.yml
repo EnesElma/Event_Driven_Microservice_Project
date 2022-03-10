@@ -1,18 +1,18 @@
 version: "3.7"
 
 services:
-#  product:
-#    build: .
-#    image: product
-#    container_name: product
-#    depends_on:
-#      - product_db
-#    ports:
-#    - 8081:8081
-#    networks:
-#      - MyNetwork
-#    environment:
-#      PRODUCT_DB_IP: product_db:5432
+  product:
+    build: .
+    image: product
+    container_name: product
+    depends_on:
+      - product_db
+    ports:
+    - 8081:8081
+    networks:
+      - MyNetwork
+    environment:
+      PRODUCT_DB_IP: product_db:5432
 
 
   product_db:

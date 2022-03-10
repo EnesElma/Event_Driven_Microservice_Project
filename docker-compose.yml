@@ -1,5 +1,19 @@
 version: "3.7"
+
+volumes:
+  csdata:
+  pgdata:
+  kafkaBrokerVolume:
+  kafkaZookeeperVolume:
+  kafkaZookeeperLogVolume:
+
+networks:
+  MyNetwork:
+    driver: bridge
+    name: MyNetwork
+
 services:
+# Kafka Service *******************************************************************************************
   kafdrop:
     image: obsidiandynamics/kafdrop
     container_name: kafdrop
@@ -48,39 +62,110 @@ services:
     networks:
       - MyNetwork
 
-#  producer:
-#    build: ./producer
-#    image: elmaenes/spring_kafka_producer
-#    container_name: producer
-#    ports:
-#    - "8080:8080"
-#    networks:
-#      - kafkaNet
-#    depends_on:
-#      - broker
-#    environment:
-#      MY_BROKER_PRODUCER: broker:19092
-#
-#  consumer:
-#    build: ./consumer
-#    image: elmaenes/spring_kafka_consumer
-#    container_name: consumer
-#    ports:
-#      - "8081:8081"
-#    networks:
-#      - kafkaNet
-#    depends_on:
-#      - broker
-#    environment:
-#      MY_BROKER_CONSUMER: broker:19092
+# Postgre Service *******************************************************************************************
+
+  postgre_db:
+    image: postgres:14-alpine
+    container_name: postgre_db
+    ports:
+      - 15432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgre_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - MyNetwork
 
 
-volumes:
-  kafkaBrokerVolume:
-  kafkaZookeeperVolume:
-  kafkaZookeeperLogVolume:
+# Cassandra Service *******************************************************************************************
+  mail_db:
+    image: cassandra:3.11
+    container_name: mail_db
+    ports:
+      - 9042:9042
+    environment:
+      HEAP_NEWSIZE: 1M
+      MAX_HEAP_SIZE: 700M
+    volumes:
+      - csdata:/var/lib/cassandra
+    networks:
+      - MyNetwork
 
-networks:
-  MyNetwork:
-    driver: bridge
-    name: MyNetwork
+
+# Cloud Service *******************************************************************************************
+  gateway:
+    build: ./cloud_gateway
+    image: gateway
+    container_name: gateway
+    ports:
+      - 8080:8080
+    networks:
+      - MyNetwork
+    environment:
+      USER_S: user:8081
+      PRODUCT_S: product:8082
+      ORDER_S: order:8083
+      MAIL_S: mail:8084
+
+# Other Services *******************************************************************************************
+
+  user:
+    build: ./user
+    image: user
+    container_name: user
+    depends_on:
+      - postgre_db
+    ports:
+    - 8081:8081
+    networks:
+      - MyNetwork
+    environment:
+      POSTGRE_DB: postgre_db:5432
+
+  product:
+    build: ./product
+    image: product
+    container_name: product
+    depends_on:
+      - postgre_db
+    ports:
+      - 8082:8082
+    networks:
+      - MyNetwork
+    environment:
+      POSTGRE_DB: postgre_db:5432
+
+  order:
+    build: ./order
+    image: order
+    container_name: order
+    depends_on:
+      - postgre_db
+    ports:
+    - 8083:8083
+    networks:
+      - MyNetwork
+    environment:
+      POSTGRE_DB: postgre_db:5432
+      MY_KAFKA: kafka:9092
+      PRODUCT_S: product:8082
+
+
+  mail:
+    build: ./mail
+    image: mail
+    container_name: mail
+    depends_on:
+      - postgre_db
+      - kafka
+    ports:
+    - 8084:8084
+    networks:
+      - MyNetwork
+    environment:
+      MY_KAFKA: kafka:9092
+      MY_CASSANDRA: mail_db
+      CASSANDRA_PORT: 9042
+      PRODUCT_S: product:8082

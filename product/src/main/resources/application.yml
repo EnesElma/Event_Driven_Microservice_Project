@@ -1,12 +1,10 @@
 server:
-  port: 8081
+  port: 8082
 
 #database
 spring:
-  application:
-    name: product_service
   datasource:
-    url: jdbc:postgresql://${PRODUCT_DB_IP:localhost:15432}/product?ssl=false
+    url: jdbc:postgresql://${POSTGRE_DB:localhost:15432}/postgre_db?ssl=false
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver

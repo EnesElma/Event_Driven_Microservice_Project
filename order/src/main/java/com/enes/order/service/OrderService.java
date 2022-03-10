@@ -4,6 +4,7 @@ import com.enes.order.entity.Order;
 import com.enes.order.repo.IOrderRepository;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ import java.util.Map;
 @Service
 public class OrderService implements IOrderService{
 
-    private String product_validate_url = "localhost:8081/product/validate";
+    @Value("${product.validate.url}")
+    private String product_validate_url;
 
     @Autowired
     private IOrderRepository repository;

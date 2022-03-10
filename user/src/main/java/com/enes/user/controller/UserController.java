@@ -1,7 +1,7 @@
-package com.enes.cloud_gateway.controller;
+package com.enes.user.controller;
 
-import com.enes.cloud_gateway.entity.User;
-import com.enes.cloud_gateway.service.IUserService;
+import com.enes.user.entity.User;
+import com.enes.user.service.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
